@@ -40,13 +40,33 @@ const data = [
 
 <template>
   <div class="size-full">
+    <div class="w-full flex items-center justify-end mb-5">
+      <div class="w-full"></div>
+      <div>
+        <Select>
+          <SelectTrigger>
+            <SelectValue
+              placeholder="Select a fruit"
+              class="mr-2"
+              default="year"
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Range</SelectLabel>
+              <SelectItem value="year"> Ultimo anno </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
     <AreaChart
       :data="data"
       index="name"
       :categories="['total', 'predicted']"
       class="!max-w-[50%]"
     />
-    <div class="w-full grid grid-cols-2 gap-4">
+    <!-- <div class="w-full grid grid-cols-2 gap-4">
       <div>
         <Card>
           <CardHeader>
@@ -67,7 +87,7 @@ const data = [
           <CardFooter> Card Footer </CardFooter>
         </Card>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

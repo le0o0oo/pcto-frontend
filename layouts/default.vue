@@ -3,21 +3,26 @@ import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Icon } from "@iconify/vue";
 
 const colorMode = useColorMode();
+
+const menuItems: { label: string; icon: string; href: string }[] = [
+  { label: "Home", icon: "lucide:home", href: "/" },
+  { label: "Relazione", icon: "lucide:file-text", href: "/relazione" },
+];
 </script>
 
 <template>
   <div
-    class="border-b-[1.5px] border-black flex items-center justify-between px-4 py-2"
+    class="border-b-[1.5px] border-black flex items-center justify-between px-4 py-2 mb-5"
   >
     <h2 class="font-bold text-xl">Sensore su rete Lepida IOT per la PA</h2>
     <NavigationMenu>
       <NavigationMenuList class="flex items-center">
-        <NavigationMenuItem>
+        <NavigationMenuItem v-for="i in menuItems">
           <NavigationMenuLink
-            href="/docs/introduction"
+            :href="i.href"
             :class="navigationMenuTriggerStyle()"
           >
-            Documentation
+            <Icon :icon="i.icon" class="mr-2 mt-1" /> {{ i.label }}
           </NavigationMenuLink>
         </NavigationMenuItem>
 
@@ -52,7 +57,9 @@ const colorMode = useColorMode();
       </NavigationMenuList>
     </NavigationMenu>
   </div>
-  <slot />
+  <div class="p-3 size-full">
+    <slot />
+  </div>
 </template>
 
 <style></style>
