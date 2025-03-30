@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+onMounted(async () => {
+  console.log("fetching");
+  const historyData = await $fetch("/api/data");
+
+  console.log(historyData);
+});
+
 const data = [
   {
     name: "Jan",
@@ -46,7 +53,7 @@ const data = [
         <Select>
           <SelectTrigger>
             <SelectValue
-              placeholder="Select a fruit"
+              placeholder="Select a range"
               class="mr-2"
               default="year"
             />

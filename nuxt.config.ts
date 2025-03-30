@@ -3,6 +3,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    lepida_api_key: process.env.API_KEY,
+    app_eui: process.env.APP_EUI,
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
@@ -27,5 +31,11 @@ export default defineNuxtConfig({
     serverBundle: {
       collections: ["lucide"], // <!--- this
     },
+  },
+  app: {
+    pageTransition: { name: "page", mode: "out-in" },
+  },
+  nitro: {
+    plugins: ["~/server/index.ts"],
   },
 });
