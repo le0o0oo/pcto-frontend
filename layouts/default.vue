@@ -29,11 +29,11 @@ const menuItems: { label: string; icon: string; href: string }[] = [
           <DropdownMenuTrigger as-child>
             <Button variant="ghost" class="h-full">
               <Icon
-                name="radix-icons:moon"
+                name="lucide:moon"
                 class="h-[1.2rem] w-[1.2rem] dark:rotate-0 dark:scale-100 transition-all -rotate-90 scale-0"
               />
               <Icon
-                name="radix-icons:sun"
+                name="lucide:sun"
                 class="absolute h-[1.2rem] w-[1.2rem] dark:rotate-90 dark:scale-0 transition-all rotate-0 scale-100"
               />
               <span class="sr-only">Toggle theme</span>
