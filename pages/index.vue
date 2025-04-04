@@ -1,53 +1,49 @@
 <script lang="ts" setup>
+const data: Ref<{ name: string; Temperature: number; Humidity: number }[]> =
+  ref([]);
+
+interface response {
+  data: {
+    data: string;
+    frequenza: string;
+    fport: number;
+    gateway: string;
+    rssi: number;
+    time: string;
+  }[];
+  eui: string;
+  from: string;
+  "nr payloads": number;
+  request_method: string;
+}
+
+function formatTime(timeString: string): string {
+  const [datePart, timePart] = timeString.split(" ");
+  const [year, month, day] = datePart!.split("-");
+  return `${day}/${month}/${year} - ${timePart}`;
+}
+
 onMounted(async () => {
-  console.log("fetching");
-  const historyData = await $fetch("/api/data");
+  const historyData = (await $fetch("/api/data")) as response;
 
-  console.log(historyData);
+  for (let i = 26; i < historyData.data.length; i++) {
+    console.log(historyData.data[i]!.time);
+
+    data.value.push({
+      name: formatTime(historyData.data[i]!.time),
+      Temperature: decoder(historyData.data[i]!.data)!.temp,
+      Humidity: decoder(historyData.data[i]!.data)!.hum,
+    });
+  }
 });
-
-const data = [
-  {
-    name: "Jan",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "Feb",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "Mar",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "Apr",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "May",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "Jun",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-  {
-    name: "Jul",
-    temp: Math.floor(Math.random() * 2000) + 500,
-    hum: Math.floor(Math.random() * 2000) + 500,
-  },
-];
 </script>
 
 <template>
   <div class="size-full">
-    <div class="w-full flex items-center justify-end mb-5">
+    <div
+      class="w-full flex items-center justify-end"
+      style="margin-bottom: 20px"
+    >
       <div class="w-full"></div>
       <div>
         <Select>
@@ -67,34 +63,26 @@ const data = [
         </Select>
       </div>
     </div>
-    <AreaChart
-      :data="data"
-      index="name"
-      :categories="['temp', 'hum']"
-      class="!max-w-[50%]"
-    />
-    <!-- <div class="w-full grid grid-cols-2 gap-4">
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent> Card Content </CardContent>
-          <CardFooter> Card Footer </CardFooter>
-        </Card>
-      </div>
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent> Card Content </CardContent>
-          <CardFooter> Card Footer </CardFooter>
-        </Card>
-      </div>
-    </div> -->
+
+    <div style="margin-bottom: 30px">
+      <AreaChart
+        :data="data"
+        index="name"
+        :categories="['Temperature', 'Humidity']"
+        :colors="[
+          'hsl(var(--vis-secondary-color)',
+          'hsl(var(--vis-primary-color)',
+        ]"
+      />
+    </div>
+
+    <div
+      class="grid grid-cols-2 gap-4"
+      style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))"
+    >
+      <div>ciao</div>
+      <div>ciao</div>
+    </div>
   </div>
 </template>
 

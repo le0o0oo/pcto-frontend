@@ -11,7 +11,7 @@ const menuItems: { label: string; icon: string; href: string }[] = [
 
 <template>
   <div
-    class="border-b-[1.5px] border-black flex items-center justify-between px-4 py-2 mb-5"
+    class="border-b-[1.5px] border-black flex items-center justify-between px-4 py-2"
   >
     <h2 class="font-bold text-xl">Sensore su rete Lepida IOT per la PA</h2>
     <NavigationMenu>
@@ -54,7 +54,7 @@ const menuItems: { label: string; icon: string; href: string }[] = [
       </NavigationMenuList>
     </NavigationMenu>
   </div>
-  <div class="p-3 size-full">
+  <div class="p-3 size-full h-[calc(100vh-53px)]">
     <slot />
   </div>
 </template>

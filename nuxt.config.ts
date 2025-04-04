@@ -17,14 +17,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
   ],
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: "",
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
     componentDir: "./components/ui",
   },
   colorMode: {
@@ -32,7 +25,7 @@ export default defineNuxtConfig({
   },
   icon: {
     serverBundle: {
-      collections: ["lucide"], // <!--- this
+      collections: ["lucide"],
     },
   },
   app: {
