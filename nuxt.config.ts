@@ -9,12 +9,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     lepida_api_key: process.env.API_KEY,
     app_eui: process.env.DEV_EUI,
+    start_from: process.env.START_FROM,
   },
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
     "@nuxtjs/color-mode",
     "@nuxt/icon",
+    "@nuxt/test-utils/module",
   ],
   shadcn: {
     prefix: "",

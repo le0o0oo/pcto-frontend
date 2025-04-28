@@ -12,7 +12,7 @@ async function fetchData() {
       method: "POST",
       body: {
         auth_key: config.lepida_api_key,
-        from: "2025-03-25 00:00:00",
+        from: config.start_from,
       },
     }
   );
@@ -22,6 +22,7 @@ async function fetchData() {
 }
 
 function getCache() {
+  fetchData();
   return cache;
 }
 
