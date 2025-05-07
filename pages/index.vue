@@ -35,7 +35,7 @@ function formatTime(timeString: string): string {
     return timePart ?? "";
   }
 
-  return `${day}/${month}/${year} - ${timePart}`;
+  return `${day}/${month}/${year} ${timePart}`;
 }
 
 onMounted(async () => {
