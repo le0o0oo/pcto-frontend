@@ -7,6 +7,8 @@ const dataTmp: Ref<{ name: string; Temperature: number }[]> = ref([]);
 const dataHum: Ref<{ name: string; Humidity: number }[]> = ref([]);
 const dataBatt: Ref<{ name: string; Battery: number }[]> = ref([]);
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 interface response {
   data: {
     data: string;
@@ -68,8 +70,20 @@ async function loadData() {
   });
 }
 
-onMounted(() => {
+onMounted(async () => {
   loadData();
+
+  await nextTick();
+
+  await delay(1000);
+
+  for (let i = 0; i < 3; i++) {
+    //@ts-ignore
+    document.getElementsByClassName("css-1hu7fn8-legendItem")[i].click();
+    await delay(450);
+  }
+  //@ts-ignore
+  document.getElementsByClassName("css-1hu7fn8-legendItem")[2].click();
 });
 
 const { pause, resume, isActive } = useIntervalFn(() => {
