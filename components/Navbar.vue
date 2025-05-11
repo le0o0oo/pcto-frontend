@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { VisuallyHidden } from "reka-ui";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import { buttonVariants } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 const colorMode = useColorMode();
 
@@ -9,6 +12,8 @@ const menuItems: { label: string; icon: string; href: string }[] = [
 ];
 
 const isDesktop = useMediaQuery("(min-width: 768px)");
+
+const isSheetOpen = ref(false);
 </script>
 
 <template>
@@ -18,8 +23,8 @@ const isDesktop = useMediaQuery("(min-width: 768px)");
   >
     <h2 class="font-bold text-xl">Sensore su rete Lepida IOT per la PA</h2>
     <div class="w-full flex justify-end items-center md:hidden">
-      <Button variant="ghost">
-        <Icon name="lucide:menu" class="size-5" />
+      <Button variant="ghost" @click="isSheetOpen = true">
+        <Icon name="lucide:menu" class="size-5 text-white" />
       </Button>
     </div>
     <NavigationMenu class="hidden md:block">
@@ -61,6 +66,27 @@ const isDesktop = useMediaQuery("(min-width: 768px)");
         </DropdownMenu>
       </NavigationMenuList>
     </NavigationMenu>
+
+    <Sheet v-model:open="isSheetOpen">
+      <SheetContent>
+        <SheetHeader>
+          <VisuallyHidden><SheetTitle>Menu</SheetTitle></VisuallyHidden>
+          <SheetDescription>
+            <div class="flex flex-col gap-3 mt-5">
+              <NuxtLink
+                v-for="i in menuItems"
+                :class="cn(buttonVariants({ variant: 'outline' }), 'w-full')"
+                :to="i.href"
+                @click="isSheetOpen = false"
+              >
+                <Icon :name="i.icon" class="mr-2 mt-[0.8px]" />
+                <span>{{ i.label }}</span>
+              </NuxtLink>
+            </div>
+          </SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   </div>
 </template>
 
