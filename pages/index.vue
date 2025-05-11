@@ -72,7 +72,7 @@ onMounted(async () => {
       style="margin-bottom: 20px"
     >
       <div class="w-full"></div>
-      <div>
+      <div v-if="false">
         <Select>
           <SelectTrigger>
             <SelectValue
@@ -84,7 +84,9 @@ onMounted(async () => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Range</SelectLabel>
-              <SelectItem value="year"> Ultimo anno </SelectItem>
+              <SelectItem value="beginning"> Dall'inizio </SelectItem>
+              <SelectItem value="month"> Ultimo mese </SelectItem>
+              <SelectItem value="week"> Ultima settimana </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
