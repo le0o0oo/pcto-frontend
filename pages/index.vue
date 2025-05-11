@@ -38,8 +38,12 @@ function formatTime(timeString: string): string {
   return `${day}/${month}/${year} ${timePart}`;
 }
 
-onMounted(async () => {
+async function loadData() {
   const historyData = (await $fetch("/api/data")) as response;
+
+  data.value = [];
+  dataTmp.value = [];
+  dataHum.value = [];
 
   historyData.data.map((i) => {
     data.value.push({
@@ -62,7 +66,15 @@ onMounted(async () => {
       Battery: decoder(i!.data)!.battery,
     });
   });
+}
+
+onMounted(() => {
+  loadData();
 });
+
+const { pause, resume, isActive } = useIntervalFn(() => {
+  loadData();
+}, 60000); // every 60 seconds
 </script>
 
 <template>
@@ -106,10 +118,7 @@ onMounted(async () => {
       />
     </div>
 
-    <div
-      class="grid grid-cols-3 gap-4"
-      style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))"
-    >
+    <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
       <div class="p-3">
         <LineChart
           :data="dataTmp"

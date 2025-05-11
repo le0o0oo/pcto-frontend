@@ -7,15 +7,22 @@ const menuItems: { label: string; icon: string; href: string }[] = [
   { label: "Home", icon: "lucide:home", href: "/" },
   { label: "Relazione", icon: "lucide:file-text", href: "/relazione" },
 ];
+
+const isDesktop = useMediaQuery("(min-width: 768px)");
 </script>
 
 <template>
   <div
-    class="border-b-[1.5px] flex items-center justify-between px-4 py-2 bg-background shadow-md"
+    class="border-b-[1.5px] flex items-center justify-between px-4 py-2 bg-background shadow-md z-50"
     style="position: sticky; top: 0"
   >
     <h2 class="font-bold text-xl">Sensore su rete Lepida IOT per la PA</h2>
-    <NavigationMenu>
+    <div class="w-full flex justify-end items-center md:hidden">
+      <Button variant="ghost">
+        <Icon name="lucide:menu" class="size-5" />
+      </Button>
+    </div>
+    <NavigationMenu class="hidden md:block">
       <NavigationMenuList class="flex items-center">
         <NavigationMenuItem v-for="i in menuItems">
           <NuxtLink :href="i.href" :class="navigationMenuTriggerStyle()">
