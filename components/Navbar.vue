@@ -21,8 +21,10 @@ const isSheetOpen = ref(false);
     class="border-b-[1.5px] flex items-center justify-between px-4 py-2 bg-background shadow-md z-50"
     style="position: sticky; top: 0"
   >
-    <h2 class="font-bold text-xl">Sensore su rete Lepida IOT per la PA</h2>
-    <div class="w-full flex justify-end items-center md:hidden">
+    <h2 class="font-bold md:text-xl md:w-auto w-full text-xs">
+      Sensore su rete Lepida IOT per la PA
+    </h2>
+    <div class="flex justify-end items-center md:hidden">
       <Button variant="ghost" @click="isSheetOpen = true">
         <Icon name="lucide:menu" class="size-5 text-white" />
       </Button>
