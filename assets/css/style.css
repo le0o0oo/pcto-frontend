@@ -1,0 +1,25 @@
+:root {
+  --scrollbar-w: 6px;
+  --scrollbar-radius: 10px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: var(--scrollbar-w);
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: var(--scrollbar-radius);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(165, 165, 165);
+  border-radius: var(--scrollbar-radius);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(134, 134, 134);
+}

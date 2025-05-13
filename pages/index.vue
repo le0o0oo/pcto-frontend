@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { VisuallyHidden } from "reka-ui";
 import Tooltip from "~/components/Tooltip.vue";
+import CardContent from "~/components/ui/card/CardContent.vue";
 
 const data: Ref<
   { name: string; Temperature: number; Humidity: number; Battery: number }[]
@@ -9,15 +11,23 @@ const dataTmp: Ref<{ name: string; Temperature: number }[]> = ref([]);
 const dataHum: Ref<{ name: string; Humidity: number }[]> = ref([]);
 const dataBatt: Ref<{ name: string; Battery: number }[]> = ref([]);
 
+const selectedIndex: Ref<number | undefined> = ref();
+const infoModal = ref(false);
+
+const res: Ref<response | undefined> = ref();
+
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 interface response {
   data: {
+    id: number;
     data: string;
     frequenza: string;
     fport: number;
     gateway: string;
     rssi: number;
+    snr: number;
+    sf: number;
     time: string;
   }[];
   eui: string;
@@ -61,7 +71,8 @@ function formatTime(timeString: string): string {
 }
 
 async function loadData() {
-  const historyData = (await $fetch("/api/data")) as response;
+  res.value = (await $fetch("/api/data")) as response;
+  const historyData = res.value;
 
   data.value = [];
   dataTmp.value = [];
@@ -69,24 +80,26 @@ async function loadData() {
   dataBatt.value = [];
 
   historyData.data.map((i) => {
+    const decoderData = decoder(i.data);
+
     data.value.push({
       name: formatTime(i!.time),
-      Temperature: decoder(i!.data)!.temp,
-      Humidity: decoder(i!.data)!.hum,
-      Battery: decoder(i!.data)!.battery,
+      Temperature: decoderData!.temp,
+      Humidity: decoderData!.hum,
+      Battery: decoderData!.battery,
     });
 
     dataTmp.value.push({
       name: formatTime(i!.time),
-      Temperature: decoder(i!.data)!.temp,
+      Temperature: decoderData!.temp,
     });
     dataHum.value.push({
       name: formatTime(i!.time),
-      Humidity: decoder(i!.data)!.hum,
+      Humidity: decoderData!.hum,
     });
     dataBatt.value.push({
       name: formatTime(i!.time),
-      Battery: decoder(i!.data)!.battery,
+      Battery: decoderData!.battery,
     });
   });
 }
@@ -114,11 +127,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
 
 <template>
   <div class="size-full">
-    <div
-      class="w-full flex items-center justify-end"
-      style="margin-bottom: 20px"
-    >
-      <div class="w-full"></div>
+    <div class="w-full flex items-center justify-end">
       <div v-if="false">
         <Select>
           <SelectTrigger>
@@ -140,49 +149,182 @@ const { pause, resume, isActive } = useIntervalFn(() => {
       </div>
     </div>
 
-    <div style="margin-bottom: 30px">
-      <AreaChart
-        :data="data"
-        index="name"
-        :categories="['Temperature', 'Humidity', 'Battery']"
-        :colors="[
-          'hsl(var(--vis-secondary-color)',
-          'hsl(var(--vis-primary-color)',
-          '#3f91d4',
-        ]"
-        :custom-tooltip="Tooltip"
-      />
+    <div class="grid lg:grid-cols-2 grid-cols-1 gap-3 mb-3">
+      <div class="size-full">
+        <Card class="size-full">
+          <CardHeader>
+            <CardTitle>Dati recenti</CardTitle>
+            <VisuallyHidden>
+              <CardDescription></CardDescription>
+            </VisuallyHidden>
+          </CardHeader>
+          <CardContent class="max-h-[39vh] overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead> Data </TableHead>
+                  <TableHead>Hex</TableHead>
+                  <TableHead>Decodificato</TableHead>
+                  <TableHead class="text-right"> </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow v-for="(i, index) in res?.data">
+                  <TableCell class="font-medium"> {{ i.time }} </TableCell>
+                  <TableCell>{{ i.data }}</TableCell>
+                  <TableCell
+                    >Temp: {{ decoder(i.data)!.temp }}°C - Hum:
+                    {{ decoder(i.data)!.hum }}% - Batt:
+                    {{ decoder(i.data)!.battery }}V</TableCell
+                  >
+                  <TableCell class="text-right">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="
+                        selectedIndex = index;
+                        infoModal = true;
+                      "
+                      ><Icon name="lucide:eye" /> Dettagli
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Dati</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AreaChart
+            :data="data"
+            index="name"
+            :categories="['Temperature', 'Humidity', 'Battery']"
+            :colors="[
+              'hsl(var(--vis-secondary-color)',
+              'hsl(var(--vis-primary-color)',
+              '#3f91d4',
+            ]"
+            :custom-tooltip="Tooltip"
+            class="max-h-[38vh]"
+          />
+        </CardContent>
+      </Card>
     </div>
 
-    <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
-      <div class="p-3">
-        <LineChart
-          :data="dataTmp"
-          index="name"
-          :categories="['Temperature']"
-          :colors="['hsl(var(--vis-secondary-color)']"
-          :custom-tooltip="Tooltip"
-        />
+    <div class="grid lg:grid-cols-3 grid-cols-1 gap-3">
+      <div class="">
+        <Card>
+          <CardHeader>
+            <CardTitle>Temperatura</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LineChart
+              :data="dataTmp"
+              index="name"
+              :categories="['Temperature']"
+              :colors="['hsl(var(--vis-secondary-color)']"
+              :custom-tooltip="Tooltip"
+              class="max-h-[33.5vh]"
+            />
+          </CardContent>
+        </Card>
       </div>
-      <div class="p-3">
-        <LineChart
-          :data="dataHum"
-          index="name"
-          :categories="['Humidity']"
-          :colors="['hsl(var(--vis-primary-color)']"
-          :custom-tooltip="Tooltip"
-        />
+      <div class="">
+        <Card>
+          <CardHeader>
+            <CardTitle>Humidity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LineChart
+              :data="dataHum"
+              index="name"
+              :categories="['Humidity']"
+              :colors="['hsl(var(--vis-primary-color)']"
+              :custom-tooltip="Tooltip"
+              class="max-h-[33.5vh]"
+            />
+          </CardContent>
+        </Card>
       </div>
-      <div class="p-3">
-        <LineChart
-          :data="dataBatt"
-          index="name"
-          :categories="['Battery']"
-          :colors="['#3f91d4']"
-          :custom-tooltip="Tooltip"
-        />
+      <div class="">
+        <Card>
+          <CardHeader>
+            <CardTitle>Battery (voltage)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LineChart
+              :data="dataBatt"
+              index="name"
+              :categories="['Battery']"
+              :colors="['#3f91d4']"
+              :custom-tooltip="Tooltip"
+              class="max-h-[33.5vh]"
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
+
+    <Dialog v-model:open="infoModal">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle
+            >Più dettagli - {{ res?.data[selectedIndex!]?.id }}</DialogTitle
+          >
+          <DialogDescription class="mt-5">
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableHead>Id</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.id }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">Time</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.time }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">RSSI</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.rssi }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">SNR</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.snr }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">SF</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.sf }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">Gateway</TableHead>
+                  <TableCell>{{
+                    res?.data[selectedIndex!]?.gateway
+                  }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">FPort</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.fport }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">Data</TableHead>
+                  <TableCell>{{ res?.data[selectedIndex!]?.data }}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableHead class="font-medium">Frequenza</TableHead>
+                  <TableCell>{{
+                    res?.data[selectedIndex!]?.frequenza
+                  }}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
