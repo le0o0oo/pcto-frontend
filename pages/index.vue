@@ -15,6 +15,16 @@ const selectedIndex: Ref<number | undefined> = ref();
 const infoModal = ref(false);
 
 const res: Ref<response | undefined> = ref();
+const loading = ref(true);
+
+const reversedTableData = computed(() => {
+  if (res.value && res.value.data && Array.isArray(res.value.data)) {
+    return [...res.value.data].reverse(); // Create a new reversed array
+  }
+  return []; // Return an empty array if data is not available
+});
+
+let exiting = false;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -102,27 +112,39 @@ async function loadData() {
       Battery: decoderData!.battery,
     });
   });
+  loading.value = false;
 }
-
-onMounted(async () => {
-  loadData();
-
-  await nextTick();
-
-  await delay(1000);
-
-  for (let i = 0; i < 3; i++) {
-    //@ts-ignore
-    document.getElementsByClassName("css-1hu7fn8-legendItem")[i].click();
-    await delay(450);
-  }
-  //@ts-ignore
-  document.getElementsByClassName("css-1hu7fn8-legendItem")[2].click();
-});
 
 const { pause, resume, isActive } = useIntervalFn(() => {
   loadData();
 }, 60000); // every 60 seconds
+
+onMounted(async () => {
+  loadData();
+  exiting = false;
+  resume();
+
+  // await nextTick();
+
+  await delay(1000);
+  try {
+    for (let i = 0; i < 3; i++) {
+      if (exiting) break;
+      //@ts-ignore
+      document.getElementsByClassName("css-1hu7fn8-legendItem")[i].click();
+      await delay(450);
+    }
+    if (!exiting) {
+      //@ts-ignore
+      document.getElementsByClassName("css-1hu7fn8-legendItem")[2].click();
+    }
+  } catch (e) {}
+});
+
+onBeforeUnmount(() => {
+  pause();
+  exiting = true;
+});
 </script>
 
 <template>
@@ -153,7 +175,10 @@ const { pause, resume, isActive } = useIntervalFn(() => {
       <div class="size-full">
         <Card class="size-full">
           <CardHeader>
-            <CardTitle>Dati recenti</CardTitle>
+            <CardTitle
+              >Lista dati
+              {{ !loading ? `(${res?.data.length} voci)` : "" }}</CardTitle
+            >
             <VisuallyHidden>
               <CardDescription></CardDescription>
             </VisuallyHidden>
@@ -162,15 +187,21 @@ const { pause, resume, isActive } = useIntervalFn(() => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead> Data </TableHead>
+                  <TableHead> Time </TableHead>
                   <TableHead>Hex</TableHead>
                   <TableHead>Decodificato</TableHead>
                   <TableHead class="text-right"> </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                <TableRow v-for="(i, index) in res?.data">
-                  <TableCell class="font-medium"> {{ i.time }} </TableCell>
+              <TableBody v-auto-animate>
+                <TableRow
+                  v-if="!loading"
+                  v-for="(i, index) in reversedTableData"
+                  :key="i.id"
+                >
+                  <TableCell class="font-medium">
+                    {{ formatTime(i.time) }}
+                  </TableCell>
                   <TableCell>{{ i.data }}</TableCell>
                   <TableCell
                     >Temp: {{ decoder(i.data)!.temp }}°C - Hum:
@@ -189,6 +220,16 @@ const { pause, resume, isActive } = useIntervalFn(() => {
                     </Button>
                   </TableCell>
                 </TableRow>
+                <TableRow v-else v-for="i in 50">
+                  <TableCell class="font-medium">
+                    <Skeleton class="h-[20px]" />
+                  </TableCell>
+                  <TableCell><Skeleton class="h-[20px]" /></TableCell>
+                  <TableCell><Skeleton class="h-[20px]" /></TableCell>
+                  <TableCell class="text-right">
+                    <Skeleton class="h-[20px]" />
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </CardContent>
@@ -197,10 +238,11 @@ const { pause, resume, isActive } = useIntervalFn(() => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dati</CardTitle>
+          <CardTitle>Dati in tabella</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent class="h-full max-h-[38.9vh]">
           <AreaChart
+            v-if="!loading"
             :data="data"
             index="name"
             :categories="['Temperature', 'Humidity', 'Battery']"
@@ -210,20 +252,22 @@ const { pause, resume, isActive } = useIntervalFn(() => {
               '#3f91d4',
             ]"
             :custom-tooltip="Tooltip"
-            class="max-h-[38vh]"
+            class="!h-full"
           />
+          <Skeleton class="size-full" v-else />
         </CardContent>
       </Card>
     </div>
 
     <div class="grid lg:grid-cols-3 grid-cols-1 gap-3">
-      <div class="">
+      <div class="size-full">
         <Card>
           <CardHeader>
             <CardTitle>Temperatura</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent class="h-full max-h-[38vh]">
             <LineChart
+              v-if="!loading"
               :data="dataTmp"
               index="name"
               :categories="['Temperature']"
@@ -231,16 +275,18 @@ const { pause, resume, isActive } = useIntervalFn(() => {
               :custom-tooltip="Tooltip"
               class="max-h-[33.5vh]"
             />
+            <Skeleton class="size-full h-[300px]" v-else />
           </CardContent>
         </Card>
       </div>
-      <div class="">
+      <div class="size-full">
         <Card>
           <CardHeader>
-            <CardTitle>Humidity</CardTitle>
+            <CardTitle>Umidità</CardTitle>
           </CardHeader>
           <CardContent>
             <LineChart
+              v-if="!loading"
               :data="dataHum"
               index="name"
               :categories="['Humidity']"
@@ -248,16 +294,18 @@ const { pause, resume, isActive } = useIntervalFn(() => {
               :custom-tooltip="Tooltip"
               class="max-h-[33.5vh]"
             />
+            <Skeleton class="size-full h-[300px]" v-else />
           </CardContent>
         </Card>
       </div>
-      <div class="">
+      <div class="size-full">
         <Card>
           <CardHeader>
-            <CardTitle>Battery (voltage)</CardTitle>
+            <CardTitle>Batteria (voltaggio)</CardTitle>
           </CardHeader>
           <CardContent>
             <LineChart
+              v-if="!loading"
               :data="dataBatt"
               index="name"
               :categories="['Battery']"
@@ -265,6 +313,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
               :custom-tooltip="Tooltip"
               class="max-h-[33.5vh]"
             />
+            <Skeleton class="size-full h-[300px]" v-else />
           </CardContent>
         </Card>
       </div>
@@ -274,7 +323,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle
-            >Più dettagli - {{ res?.data[selectedIndex!]?.id }}</DialogTitle
+            >Raw data - {{ res?.data[selectedIndex!]?.id }}</DialogTitle
           >
           <DialogDescription class="mt-5">
             <Table>
