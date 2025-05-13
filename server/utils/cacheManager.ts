@@ -6,6 +6,7 @@ let cache: any = {};
 
 async function fetchData() {
   consola.info("Fetching data from Lepida API...");
+
   const res = await $fetch(
     `https://api.retepaiot.it/sensordata/${config.app_eui}`,
     {
@@ -16,8 +17,9 @@ async function fetchData() {
       },
     }
   );
+  console.log(res);
 
-  cache = res;
+  if ((res as any).data) cache = res;
   consola.success("Data fetched & cached");
 }
 

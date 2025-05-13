@@ -18,7 +18,7 @@ export default (
 
   temp = parseInt(tempHex, 16) / 100;
   hum = parseInt(humHex, 16) / 100;
-  battery = parseInt(batteryHex, 16);
+  battery = parseInt(batteryHex, 16) / 100;
 
   return { temp, battery, hum };
 };

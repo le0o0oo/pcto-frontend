@@ -25,19 +25,37 @@ interface response {
 }
 
 function formatTime(timeString: string): string {
-  const [datePart, timePart] = timeString.split(" ");
-  const [year, month, day] = datePart!.split("-");
+  // Parse the input date string
+  const date = new Date(timeString);
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear().toString();
-  const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-  const currentDay = currentDate.getDate().toString().padStart(2, "0");
-
-  if (year === currentYear && month === currentMonth && day === currentDay) {
-    return timePart ?? "";
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
   }
 
-  return `${day}/${month}/${year} ${timePart}`;
+  // Add 2 hours to the date
+  date.setHours(date.getHours() + 2);
+
+  // Get the current date for comparison
+  const currentDate = new Date();
+  const isToday =
+    date.getFullYear() === currentDate.getFullYear() &&
+    date.getMonth() === currentDate.getMonth() &&
+    date.getDate() === currentDate.getDate();
+
+  // Format the date and time
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  if (isToday) {
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
 async function loadData() {
@@ -46,6 +64,7 @@ async function loadData() {
   data.value = [];
   dataTmp.value = [];
   dataHum.value = [];
+  dataBatt.value = [];
 
   historyData.data.map((i) => {
     data.value.push({
