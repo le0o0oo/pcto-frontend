@@ -1,7 +1,4 @@
-<script lang="ts" setup>
-let serviceUrl =
-  "https://ej2services.syncfusion.com/production/web-services/api/pdfviewer";
-</script>
+<script lang="ts" setup></script>
 
 <template>
   <div class="size-full">

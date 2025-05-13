@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Tooltip from "~/components/Tooltip.vue";
+
 const data: Ref<
   { name: string; Temperature: number; Humidity: number; Battery: number }[]
 > = ref([]);
@@ -148,6 +150,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
           'hsl(var(--vis-primary-color)',
           '#3f91d4',
         ]"
+        :custom-tooltip="Tooltip"
       />
     </div>
 
@@ -158,6 +161,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
           index="name"
           :categories="['Temperature']"
           :colors="['hsl(var(--vis-secondary-color)']"
+          :custom-tooltip="Tooltip"
         />
       </div>
       <div class="p-3">
@@ -166,6 +170,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
           index="name"
           :categories="['Humidity']"
           :colors="['hsl(var(--vis-primary-color)']"
+          :custom-tooltip="Tooltip"
         />
       </div>
       <div class="p-3">
@@ -174,6 +179,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
           index="name"
           :categories="['Battery']"
           :colors="['#3f91d4']"
+          :custom-tooltip="Tooltip"
         />
       </div>
     </div>
