@@ -23,8 +23,9 @@ async function fetchData() {
   consola.success("Data fetched & cached");
 }
 
-function getCache() {
-  fetchData();
+async function getCache() {
+  if (Object.keys(cache).length === 0) await fetchData();
+  else fetchData();
   return cache;
 }
 
