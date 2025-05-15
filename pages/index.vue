@@ -323,49 +323,63 @@ onBeforeUnmount(() => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle
-            >Raw data - {{ res?.data[selectedIndex!]?.id }}</DialogTitle
+            >Raw data - {{ reversedTableData[selectedIndex!]?.id }}</DialogTitle
           >
           <DialogDescription class="mt-5">
             <Table>
               <TableBody>
                 <TableRow>
                   <TableHead>Id</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.id }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.id
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">Time</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.time }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.time
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">RSSI</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.rssi }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.rssi
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">SNR</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.snr }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.snr
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">SF</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.sf }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.sf
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">Gateway</TableHead>
                   <TableCell>{{
-                    res?.data[selectedIndex!]?.gateway
+                    reversedTableData[selectedIndex!]?.gateway
                   }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">FPort</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.fport }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.fport
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">Data</TableHead>
-                  <TableCell>{{ res?.data[selectedIndex!]?.data }}</TableCell>
+                  <TableCell>{{
+                    reversedTableData[selectedIndex!]?.data
+                  }}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableHead class="font-medium">Frequenza</TableHead>
                   <TableCell>{{
-                    res?.data[selectedIndex!]?.frequenza
+                    reversedTableData[selectedIndex!]?.frequenza
                   }}</TableCell>
                 </TableRow>
               </TableBody>
